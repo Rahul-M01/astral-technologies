@@ -11,7 +11,7 @@ const shape=new T.Shape();shape.moveTo(.47,-.55);shape.lineTo(1.04,-1.72);shape.
 // Transparent ink decal avoids a mismatched rectangular patch on the body.
 const label=document.createElement('canvas');label.width=512;label.height=2048;
 const ctx=label.getContext('2d');ctx.fillStyle='#303740';ctx.textAlign='center';ctx.font='58px Arial';
-[...'ASTRAL'].forEach((c,i)=>ctx.fillText(c,256,460+i*120));
+[...'astraL'].forEach((c,i)=>ctx.fillText(c,256,460+i*120));
 ctx.font='23px Arial';ctx.fillText(kind==='suborbital'?'03':kind==='high-altitude'?'02':'01',256,1500);
 const texture=new T.CanvasTexture(label);texture.colorSpace=T.SRGBColorSpace;
 const badge=new T.Mesh(new T.CylinderGeometry(.492,.492,2.65,48,1,true,-.30,.60),new T.MeshStandardMaterial({map:texture,transparent:true,depthWrite:false,roughness:.55,polygonOffset:true,polygonOffsetFactor:-1}));
@@ -48,6 +48,20 @@ if(kind==='suborbital'){
   cylinder(section,radius+.002,radius+.002,.018,height/2-.012,edge);
   cylinder(section,radius+.002,radius+.002,.018,-height/2+.012,edge);
   upper.add(section);upperModules.push(section);
+ }
+ // Upper-stage fins stay with the aft upper-stage module during separation.
+ const upperFinOutline=new T.Shape();
+ upperFinOutline.moveTo(.425,.22);
+ upperFinOutline.lineTo(.86,-.49);
+ upperFinOutline.lineTo(.86,-.75);
+ upperFinOutline.lineTo(.425,-.69);
+ upperFinOutline.closePath();
+ const upperFinGeometry=new T.ExtrudeGeometry(upperFinOutline,{depth:.045,bevelEnabled:true,bevelThickness:.008,bevelSize:.01,bevelSegments:2,steps:1});
+ upperFinGeometry.translate(0,0,-.0225);
+ for(let i=0;i<4;i++){
+  const fin=new T.Mesh(upperFinGeometry,edge);
+  fin.rotation.y=i*Math.PI/2;
+  upperModules[0].add(fin);
  }
 }
 
